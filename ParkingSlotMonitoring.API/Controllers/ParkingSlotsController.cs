@@ -91,4 +91,69 @@ public class ParkingSlotsController : ControllerBase
 
         return Ok("Checked out successfully");
     }
+
+    [Authorize(Roles = "2")]
+    [HttpPut("update-status")]
+    public IActionResult UpdateSlotStatus(int slotId, string status)
+    {
+        var slot = _context.ParkingSlots
+            .FirstOrDefault(s => s.slot_id == slotId);
+
+        if (slot == null)
+            return NotFound("Slot not found");
+
+        slot.status = status;
+
+        _context.SaveChanges();
+
+        return Ok("Slot status updated successfully");
+    }
+
+    [Authorize(Roles = "2")]
+    [HttpPost("add-slot")]
+    public IActionResult AddSlot(string slotNumber)
+    {
+        var slot = new ParkingSlot
+        {
+            slot_number = slotNumber,
+            status = "Available",
+            area_id = 1,
+            row_number = 1,
+            column_number = 1
+        };
+
+        _context.ParkingSlots.Add(slot);
+
+        _context.SaveChanges();
+
+        return Ok("Parking slot added successfully");
+    }
+
+    [Authorize(Roles = "2")]
+    [HttpDelete("delete-slot")]
+    public IActionResult DeleteSlot(int slotId)
+    {
+        var slot = _context.ParkingSlots
+            .FirstOrDefault(s => s.slot_id == slotId);
+
+        if (slot == null)
+            return NotFound("Slot not found");
+
+        _context.ParkingSlots.Remove(slot);
+
+        _context.SaveChanges();
+
+        return Ok("Parking slot deleted successfully");
+    }
+
+    [Authorize(Roles = "2")]
+    [HttpGet("reservation-history")]
+    public IActionResult GetReservationHistory()
+    {
+        var reservations = _context.Reservations
+            .OrderByDescending(r => r.reservation_id)
+            .ToList();
+
+        return Ok(reservations);
+    }
 }
