@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ParkingSlotMonitoring.API.Data;
+using ParkingSlotMonitoring.API.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -50,6 +51,27 @@ namespace ParkingSlotMonitoring.API.Controllers
             {
                 token = new JwtSecurityTokenHandler().WriteToken(token)
             });
+        }
+        [HttpPost("register")]
+        public IActionResult Register(string name, string email, string password)
+        {
+            var existingUser = _context.Users.FirstOrDefault(u => u.email == email);
+
+            if (existingUser != null)
+                return BadRequest("Email already exists");
+
+            var user = new User
+            {
+                name = name,
+                email = email,
+                password = password,
+                role_id = 1
+            };
+
+            _context.Users.Add(user);
+            _context.SaveChanges();
+
+            return Ok("User registered successfully");
         }
     }
 }
