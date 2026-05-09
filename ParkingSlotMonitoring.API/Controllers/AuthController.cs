@@ -31,7 +31,8 @@ namespace ParkingSlotMonitoring.API.Controllers
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, user.name),
-                new Claim(ClaimTypes.NameIdentifier, user.user_id.ToString())
+                new Claim(ClaimTypes.NameIdentifier, user.user_id.ToString()),
+                new Claim("user_id", user.user_id.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
